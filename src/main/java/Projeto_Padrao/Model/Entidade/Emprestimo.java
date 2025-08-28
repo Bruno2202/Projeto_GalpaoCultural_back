@@ -13,8 +13,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(schema = "public", name = "Livros")
-public class Retirada {
+@Table(schema = "public", name = "REGISTROS")
+public class Emprestimo {
 
     @Id
     @Column(name = "CELULAR", nullable = false)
@@ -34,4 +34,7 @@ public class Retirada {
 
     @Column(name = "DEVOLUCAO")
     LocalDate devolucao;
+
+    @Column(name = "DEVOLVIDO", nullable = false)
+    boolean devolvido;
 }

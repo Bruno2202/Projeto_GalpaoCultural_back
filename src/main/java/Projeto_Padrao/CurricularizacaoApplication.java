@@ -8,6 +8,8 @@ public class CurricularizacaoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CurricularizacaoApplication.class, args);
+
+
 	}
 
 }

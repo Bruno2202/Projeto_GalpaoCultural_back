@@ -1,6 +1,7 @@
 package Projeto_Padrao.Model.Entidade;
 
 import Projeto_Padrao.Model.Dto.EmprestimoDTO;
+import Projeto_Padrao.Model.Dto.VisualizarEmpDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

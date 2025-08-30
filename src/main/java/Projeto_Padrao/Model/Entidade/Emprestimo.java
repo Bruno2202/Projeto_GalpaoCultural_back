@@ -1,5 +1,6 @@
 package Projeto_Padrao.Model.Entidade;
 
+import Projeto_Padrao.Model.Dto.EmprestimoDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,28 +14,42 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(schema = "public", name = "REGISTROS")
+@Table(schema = "public", name = "emprestimos")
 public class Emprestimo {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private Long id;
+
     @Column(name = "CELULAR", nullable = false)
-    String celular;
+    private String celular;
 
     @Column(name = "NOME", nullable = false)
-    String nome;
+    private String nome;
 
     @Column(name = "LIVRO", nullable = false)
-    String livro;
+    private String livro;
 
     @Column(name = "AUTOR", nullable = false)
-    String autor;
+    private String autor;
 
-    @Column(name = "EMPRESTIMO", nullable = false)
-    LocalDate emprestimo;
+    @Column(name = "RETIRADA", nullable = false)
+    private LocalDate retirada;
 
     @Column(name = "DEVOLUCAO")
-    LocalDate devolucao;
+    private LocalDate devolucao;
 
     @Column(name = "DEVOLVIDO", nullable = false)
-    boolean devolvido;
+    private boolean devolvido;
+
+    public Emprestimo(EmprestimoDTO emprestimoNovo) {
+        this.celular = emprestimoNovo.celular();
+        this.nome = emprestimoNovo.nome();
+        this.livro = emprestimoNovo.livro();
+        this.autor = emprestimoNovo.autor();
+        this.retirada = LocalDate.now();
+        this.devolucao = null;
+        this.devolvido = false;
+    }
 }

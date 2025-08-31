@@ -7,6 +7,7 @@ import Projeto_Padrao.Model.Exception.DataNotFoundException;
 import Projeto_Padrao.Model.Repository.EmprestimoRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service("emprestimoServicePrincipal")
@@ -40,6 +41,7 @@ public class EmprestimoService {
     //DEVOLVER LIVROS
     public void DevolverLivro(Long id){
         Emprestimo registro = emprestimoRepository.findById(id).orElseThrow(() -> new DataNotFoundException(id));
+        registro.setDevolucao(LocalDate.now());
         registro.setDevolvido(true);
         emprestimoRepository.save(registro);
     }

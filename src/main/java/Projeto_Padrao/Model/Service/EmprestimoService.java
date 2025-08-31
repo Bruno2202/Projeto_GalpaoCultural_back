@@ -19,7 +19,7 @@ public class EmprestimoService {
     }
 
     //LISTAR TODOS OS REGISTROS POR CELULAR
-    public List<VisualizarEmpDTO> listaDeEmprestimos(String celular) {
+    public List<VisualizarEmpDTO> ListaDeEmprestimos(String celular) {
         List<Emprestimo> lista = emprestimoRepository.findAllByCelular(celular);
         if (lista.isEmpty()) {
             throw new DataNotFoundException("");
@@ -32,9 +32,16 @@ public class EmprestimoService {
         try {
             emprestimoRepository.save(new Emprestimo(emprestimoNovo));
         } catch (Exception e) {
-            throw new DataNotFoundException("NÃO FOI POSSIVEL REGISTRAR ESSE EMPRESTIMO!");
+            throw new RuntimeException(e + "NÃO FOI POSSIVEL REGISTRAR ESSE EMPRESTIMO!");
         }
 
+    }
+
+    //DEVOLVER LIVROS
+    public void DevolverLivro(Long id){
+        Emprestimo registro = emprestimoRepository.findById(id).orElseThrow(() -> new DataNotFoundException(id));
+        registro.setDevolvido(true);
+        emprestimoRepository.save(registro);
     }
 
 }

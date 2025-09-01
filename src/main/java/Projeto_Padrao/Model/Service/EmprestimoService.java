@@ -23,27 +23,24 @@ public class EmprestimoService {
     public List<VisualizarEmpDTO> ListaDeEmprestimos(String celular) {
         List<Emprestimo> lista = emprestimoRepository.findAllByCelular(celular);
         if (lista.isEmpty()) {
-            throw new DataNotFoundException("");
+            throw new DataNotFoundException("CELULAR NÃO ENCONTRADO!");
         }
-        return lista.stream().filter(e -> !e.isDevolvido()).map(e -> new VisualizarEmpDTO(e.getNome(), e.getLivro(), e.getAutor())).toList();
+        return lista.stream().filter(e -> !e.isDevolvido()).map(e -> new VisualizarEmpDTO(e.getId(), e.getNome(), e.getLivro(), e.getAutor())).toList();
     }
 
     //ADCIONAR REGISTROS
     public void AdicionarEmprestimo(EmprestimoDTO emprestimoNovo) {
         try {
             emprestimoRepository.save(new Emprestimo(emprestimoNovo));
-        } catch (Exception e) {
-            throw new RuntimeException(e + "NÃO FOI POSSIVEL REGISTRAR ESSE EMPRESTIMO!");
-        }
-
+        } catch (Exception e) {throw new DataNotFoundException("NÃO FOI POSSÍVEL REGISTRAR ESSE EMPRÉSTIMO!");}
     }
 
     //DEVOLVER LIVROS
-    public void DevolverLivro(Long id){
-        Emprestimo registro = emprestimoRepository.findById(id).orElseThrow(() -> new DataNotFoundException(id));
-        registro.setDevolucao(LocalDate.now());
-        registro.setDevolvido(true);
-        emprestimoRepository.save(registro);
+    public void DevolverLivro(Long id) {
+            Emprestimo registro = emprestimoRepository.findById(id).filter(e -> !e.isDevolvido()).orElseThrow(() -> new DataNotFoundException(id));
+            registro.setDevolucao(LocalDate.now());
+            registro.setDevolvido(true);
+            emprestimoRepository.save(registro);
     }
 
 }

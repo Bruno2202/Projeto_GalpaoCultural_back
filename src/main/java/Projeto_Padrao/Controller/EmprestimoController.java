@@ -20,6 +20,11 @@ public class EmprestimoController {
         this.emprestimoService = emprestimoService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<VisualizarEmpDTO>> ListarEmprestimos() {
+        return ResponseEntity.status(HttpStatus.OK).body(emprestimoService.ListarEmprestimos());
+    }
+
     @GetMapping(path = "/devolver")
     public ResponseEntity<List<VisualizarEmpDTO>> ListaDeEmprestimo(@RequestParam String celular) {
         return ResponseEntity.status(HttpStatus.OK).body(emprestimoService.ListaDeEmprestimos(celular));

@@ -2,13 +2,15 @@ package Projeto_Padrao.Model.Service;
 
 import Projeto_Padrao.Model.Dto.EmprestimoDTO;
 import Projeto_Padrao.Model.Dto.VisualizarEmpDTO;
+import Projeto_Padrao.Model.Dto.VisualizarLivrosDTO;
 import Projeto_Padrao.Model.Entidade.Emprestimo;
 import Projeto_Padrao.Model.Exception.DataNotFoundException;
 import Projeto_Padrao.Model.Repository.EmprestimoRepository;
+import com.google.genai.types.GenerateContentResponse;
 import org.springframework.stereotype.Service;
+import com.google.genai.Client;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service("emprestimoServicePrincipal")
@@ -20,19 +22,22 @@ public class EmprestimoService {
         this.emprestimoRepository = emprestimoRepository;
     }
 
-    //LISTAR TODOS OS REGISTROS
-    public List<VisualizarEmpDTO> ListarEmprestimos() {
+    //LISTAR TODOS OS REGISTROS **ADM**
+    public List<EmprestimoDTO> ListarEmprestimos() {
         List<Emprestimo> lista = emprestimoRepository.findAll();
 
         if (lista.isEmpty()) {
             throw new DataNotFoundException("EMPRESTIMOS NÃO ENCONTRADOS");
         }
 
-        return lista.stream().map(e -> new VisualizarEmpDTO(
-                e.getId(),
+        return lista.stream().map(e -> new EmprestimoDTO(
+                e.getCelular(),
                 e.getNome(),
                 e.getLivro(),
-                e.getAutor()
+                e.getAutor(),
+                e.getRetirada(),
+                e.getDevolucao(),
+                e.isDevolvido()
         )).toList();
     }
 
@@ -48,6 +53,17 @@ public class EmprestimoService {
     //ADCIONAR REGISTROS
     public void AdicionarEmprestimo(EmprestimoDTO emprestimoNovo) {
         try {
+            String livroFormatado = emprestimoNovo.livro();
+            String autorFormatado = emprestimoNovo.autor();
+
+            List<VisualizarLivrosDTO> dadosLivros = this.ConsultarLivros();
+
+            boolean existe = dadosLivros.stream().anyMatch(e -> e.livro().equals(livroFormatado));
+
+            if (!existe) {
+                // CorrigirNomes(livroFormatado);
+            }
+
             emprestimoRepository.save(new Emprestimo(emprestimoNovo));
         } catch (Exception e) {
             throw new DataNotFoundException("NÃO FOI POSSÍVEL REGISTRAR ESSE EMPRÉSTIMO!");
@@ -62,4 +78,53 @@ public class EmprestimoService {
         emprestimoRepository.save(registro);
     }
 
+    public String CorrigirNomes(VisualizarLivrosDTO nome) {
+        Client client = Client.builder().apiKey("AIzaSyDv6IvXb0Ku5bV0BO8GHm9J0ceE6zA1wHU").build();
+
+        String prompt = """
+                Você é uma inteligência artificial especializada em literatura.
+                Sua função é corrigir e padronizar nomes de livros e autores,
+                mesmo quando são digitados com erros ortográficos, variações ou abreviações.
+                
+                Regras:
+                1. Sempre devolva a resposta em letras maiúsculas (CAPSLOCK).
+                2. Quando for um livro, retorne o título mais conhecido e correto.
+                   Exemplo: DON CASMURO -> DOM CASMURRO
+                            ALNISTA -> O ALIENISTA
+                3. Quando for um autor, retorne o nome correto e completo.
+                   Exemplo: MAÇADO -> MACHADO DE ASSIS
+                4. Pode acontecer de a entrada ser apenas um livro ou apenas um autor. Trate os dois casos.
+                5. Se não conseguir identificar com clareza, tente sugerir a forma mais próxima e conhecida.
+                
+                Entrada: "%s"
+                
+                Saída esperada (apenas em JSON):
+                {
+                  "livro": "nome do livro",
+                  "autor": "nome do autor"
+                }
+                """.formatted(nome);
+
+        GenerateContentResponse response =
+                client.models.generateContent(
+                        "gemini-2.5-flash",
+                        prompt,
+                        null
+                );
+
+        return response.text().trim();
+    }
+
+    public List<VisualizarLivrosDTO> ConsultarLivros() {
+        List<Emprestimo> lista = emprestimoRepository.findAll();
+
+        if (lista.isEmpty()) {
+            throw new DataNotFoundException("EMPRESTIMOS NÃO ENCONTRADOS");
+        }
+
+        return lista.stream().map(e -> new VisualizarLivrosDTO(
+                e.getLivro(),
+                e.getAutor()
+        )).toList();
+    }
 }

@@ -21,7 +21,7 @@ public class EmprestimoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VisualizarEmpDTO>> ListarEmprestimos() {
+    public ResponseEntity<List<EmprestimoDTO>> ListarEmprestimos() {
         return ResponseEntity.status(HttpStatus.OK).body(emprestimoService.ListarEmprestimos());
     }
 

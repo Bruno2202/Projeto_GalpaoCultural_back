@@ -50,6 +50,6 @@ public class Emprestimo {
         this.autor = emprestimoNovo.autor();
         this.retirada = LocalDate.now();
         this.devolucao = null;
-        this.devolvido = false;
+        this.devolvido = emprestimoNovo.devolvido();
     }
 }

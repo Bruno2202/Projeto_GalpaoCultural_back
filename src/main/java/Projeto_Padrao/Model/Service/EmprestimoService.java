@@ -55,7 +55,7 @@ public class EmprestimoService {
             Emprestimo emprestimoRevisado = new Emprestimo(emprestimoNovo);
             emprestimoRevisado.setLivro(CorrigirNomes(emprestimoNovo.livro()));
             emprestimoRevisado.setAutor(CorrigirNomes(emprestimoNovo.autor()));
-            
+
             emprestimoRepository.save(emprestimoRevisado);
         } catch (Exception e) {
             throw new DataNotFoundException("NÃO FOI POSSÍVEL REGISTRAR ESSE EMPRÉSTIMO!");
@@ -69,22 +69,20 @@ public class EmprestimoService {
         emprestimoRepository.save(registro);
     }
 
-    public List<EmprestimosAtrasadosDTO> EmprestimosAtrasados(){
-        try{
-        LocalDate dataLimite = LocalDate.now();
-
-        return emprestimoRepository.findAll().stream()
-                .filter(e -> dataLimite.isAfter(e.getRetirada().plusMonths(1)))
-                .filter(e -> !e.isDevolvido())
-                .map(e -> new EmprestimosAtrasadosDTO(
-                        e.getId(),
-                        e.getCelular(),
-                        e.getNome(),
-                        e.getLivro(),
-                        e.getAutor()
-                ))
-                .collect(Collectors.toList());
-        }catch(Exception e){
+    public List<EmprestimosAtrasadosDTO> EmprestimosAtrasados() {
+        try {
+            return emprestimoRepository.findAll().stream()
+                    .filter(e -> LocalDate.now().isAfter(e.getRetirada().plusMonths(1)))
+                    .filter(e -> !e.isDevolvido())
+                    .map(e -> new EmprestimosAtrasadosDTO(
+                            e.getId(),
+                            e.getCelular(),
+                            e.getNome(),
+                            e.getLivro(),
+                            e.getAutor()
+                    ))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
             throw new DataNotFoundException("NÃO EXISTEM EMPRESTIMOS ATRASADOS!");
         }
     }

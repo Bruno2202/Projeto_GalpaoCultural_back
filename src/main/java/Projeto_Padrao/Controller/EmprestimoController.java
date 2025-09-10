@@ -1,8 +1,8 @@
 package Projeto_Padrao.Controller;
 
 import Projeto_Padrao.Model.Dto.EmprestimoDTO;
+import Projeto_Padrao.Model.Dto.EmprestimosAtrasadosDTO;
 import Projeto_Padrao.Model.Dto.VisualizarEmpDTO;
-import Projeto_Padrao.Model.Entidade.Emprestimo;
 import Projeto_Padrao.Model.Service.EmprestimoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +40,10 @@ public class EmprestimoController {
     public ResponseEntity<Void> DevolverLivro(@RequestParam Long id){
         emprestimoService.DevolverLivro(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @GetMapping(path = "/atrasados")
+    public ResponseEntity<List<EmprestimosAtrasadosDTO>> EmprestimosAtrasados(){
+        return ResponseEntity.status(HttpStatus.OK).body(emprestimoService.EmprestimosAtrasados());
     }
 }

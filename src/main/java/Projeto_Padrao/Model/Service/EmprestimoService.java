@@ -1,8 +1,8 @@
 package Projeto_Padrao.Model.Service;
 
 import Projeto_Padrao.Model.Dto.EmprestimoDTO;
+import Projeto_Padrao.Model.Dto.EmprestimosAtrasadosDTO;
 import Projeto_Padrao.Model.Dto.VisualizarEmpDTO;
-import Projeto_Padrao.Model.Dto.VisualizarLivrosDTO;
 import Projeto_Padrao.Model.Entidade.Emprestimo;
 import Projeto_Padrao.Model.Exception.DataNotFoundException;
 import Projeto_Padrao.Model.Repository.EmprestimoRepository;
@@ -12,6 +12,7 @@ import com.google.genai.Client;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("emprestimoServicePrincipal")
 public class EmprestimoService {
@@ -41,7 +42,6 @@ public class EmprestimoService {
         )).toList();
     }
 
-    //LISTAR TODOS OS REGISTROS POR CELULAR
     public List<VisualizarEmpDTO> ListaDeEmprestimos(String celular) {
         List<Emprestimo> lista = emprestimoRepository.findAllByCelular(celular);
         if (lista.isEmpty()) {
@@ -50,14 +50,11 @@ public class EmprestimoService {
         return lista.stream().filter(e -> !e.isDevolvido()).map(e -> new VisualizarEmpDTO(e.getId(), e.getNome(), e.getLivro(), e.getAutor())).toList();
     }
 
-    //ADCIONAR REGISTROS
     public void AdicionarEmprestimo(EmprestimoDTO emprestimoNovo) {
         try {
             Emprestimo emprestimoRevisado = new Emprestimo(emprestimoNovo);
             emprestimoRevisado.setLivro(CorrigirNomes(emprestimoNovo.livro()));
             emprestimoRevisado.setAutor(CorrigirNomes(emprestimoNovo.autor()));
-            //ARRUMAR O TEMPO DE EXECUÇÃO SOMENTE SE NECESSARIO!!
-
             
             emprestimoRepository.save(emprestimoRevisado);
         } catch (Exception e) {
@@ -65,12 +62,31 @@ public class EmprestimoService {
         }
     }
 
-    //DEVOLVER LIVROS
     public void DevolverLivro(Long id) {
         Emprestimo registro = emprestimoRepository.findById(id).filter(e -> !e.isDevolvido()).orElseThrow(() -> new DataNotFoundException(id));
         registro.setDevolucao(LocalDate.now());
         registro.setDevolvido(true);
         emprestimoRepository.save(registro);
+    }
+
+    public List<EmprestimosAtrasadosDTO> EmprestimosAtrasados(){
+        try{
+        LocalDate dataLimite = LocalDate.now();
+
+        return emprestimoRepository.findAll().stream()
+                .filter(e -> dataLimite.isAfter(e.getRetirada().plusMonths(1)))
+                .filter(e -> !e.isDevolvido())
+                .map(e -> new EmprestimosAtrasadosDTO(
+                        e.getId(),
+                        e.getCelular(),
+                        e.getNome(),
+                        e.getLivro(),
+                        e.getAutor()
+                ))
+                .collect(Collectors.toList());
+        }catch(Exception e){
+            throw new DataNotFoundException("NÃO EXISTEM EMPRESTIMOS ATRASADOS!");
+        }
     }
 
     public String CorrigirNomes(String nome) {

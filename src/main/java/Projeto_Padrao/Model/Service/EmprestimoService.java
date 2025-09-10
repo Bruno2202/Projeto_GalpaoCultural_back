@@ -53,18 +53,13 @@ public class EmprestimoService {
     //ADCIONAR REGISTROS
     public void AdicionarEmprestimo(EmprestimoDTO emprestimoNovo) {
         try {
-            String livroFormatado = emprestimoNovo.livro();
-            String autorFormatado = emprestimoNovo.autor();
+            Emprestimo emprestimoRevisado = new Emprestimo(emprestimoNovo);
+            emprestimoRevisado.setLivro(CorrigirNomes(emprestimoNovo.livro()));
+            emprestimoRevisado.setAutor(CorrigirNomes(emprestimoNovo.autor()));
+            //ARRUMAR O TEMPO DE EXECUÇÃO SOMENTE SE NECESSARIO!!
 
-            List<VisualizarLivrosDTO> dadosLivros = this.ConsultarLivros();
-
-            boolean existe = dadosLivros.stream().anyMatch(e -> e.livro().equals(livroFormatado));
-
-            if (!existe) {
-                // CorrigirNomes(livroFormatado);
-            }
-
-            emprestimoRepository.save(new Emprestimo(emprestimoNovo));
+            
+            emprestimoRepository.save(emprestimoRevisado);
         } catch (Exception e) {
             throw new DataNotFoundException("NÃO FOI POSSÍVEL REGISTRAR ESSE EMPRÉSTIMO!");
         }
@@ -78,7 +73,7 @@ public class EmprestimoService {
         emprestimoRepository.save(registro);
     }
 
-    public String CorrigirNomes(VisualizarLivrosDTO nome) {
+    public String CorrigirNomes(String nome) {
         Client client = Client.builder().apiKey("AIzaSyDv6IvXb0Ku5bV0BO8GHm9J0ceE6zA1wHU").build();
 
         String prompt = """
@@ -98,11 +93,7 @@ public class EmprestimoService {
                 
                 Entrada: "%s"
                 
-                Saída esperada (apenas em JSON):
-                {
-                  "livro": "nome do livro",
-                  "autor": "nome do autor"
-                }
+                Saída esperada (apenas em String):
                 """.formatted(nome);
 
         GenerateContentResponse response =
@@ -113,18 +104,5 @@ public class EmprestimoService {
                 );
 
         return response.text().trim();
-    }
-
-    public List<VisualizarLivrosDTO> ConsultarLivros() {
-        List<Emprestimo> lista = emprestimoRepository.findAll();
-
-        if (lista.isEmpty()) {
-            throw new DataNotFoundException("EMPRESTIMOS NÃO ENCONTRADOS");
-        }
-
-        return lista.stream().map(e -> new VisualizarLivrosDTO(
-                e.getLivro(),
-                e.getAutor()
-        )).toList();
     }
 }

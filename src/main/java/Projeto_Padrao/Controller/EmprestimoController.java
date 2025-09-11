@@ -20,11 +20,6 @@ public class EmprestimoController {
         this.emprestimoService = emprestimoService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<EmprestimoDTO>> ListarEmprestimos() {
-        return ResponseEntity.status(HttpStatus.OK).body(emprestimoService.ListarEmprestimos());
-    }
-
     @GetMapping(path = "/devolver")
     public ResponseEntity<List<VisualizarEmpDTO>> ListaDeEmprestimo(@RequestParam String celular) {
         return ResponseEntity.status(HttpStatus.OK).body(emprestimoService.ListaDeEmprestimos(celular));
@@ -40,10 +35,5 @@ public class EmprestimoController {
     public ResponseEntity<Void> DevolverLivro(@RequestParam Long id){
         emprestimoService.DevolverLivro(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-    }
-
-    @GetMapping(path = "/atrasados")
-    public ResponseEntity<List<EmprestimosAtrasadosDTO>> EmprestimosAtrasados(){
-        return ResponseEntity.status(HttpStatus.OK).body(emprestimoService.EmprestimosAtrasados());
     }
 }

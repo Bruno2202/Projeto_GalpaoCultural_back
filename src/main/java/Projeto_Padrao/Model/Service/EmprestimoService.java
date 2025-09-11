@@ -23,25 +23,6 @@ public class EmprestimoService {
         this.emprestimoRepository = emprestimoRepository;
     }
 
-    //LISTAR TODOS OS REGISTROS **ADM**
-    public List<EmprestimoDTO> ListarEmprestimos() {
-        List<Emprestimo> lista = emprestimoRepository.findAll();
-
-        if (lista.isEmpty()) {
-            throw new DataNotFoundException("EMPRESTIMOS NÃO ENCONTRADOS");
-        }
-
-        return lista.stream().map(e -> new EmprestimoDTO(
-                e.getCelular(),
-                e.getNome(),
-                e.getLivro(),
-                e.getAutor(),
-                e.getRetirada(),
-                e.getDevolucao(),
-                e.isDevolvido()
-        )).toList();
-    }
-
     public List<VisualizarEmpDTO> ListaDeEmprestimos(String celular) {
         List<Emprestimo> lista = emprestimoRepository.findAllByCelular(celular);
         if (lista.isEmpty()) {
@@ -67,24 +48,6 @@ public class EmprestimoService {
         registro.setDevolucao(LocalDate.now());
         registro.setDevolvido(true);
         emprestimoRepository.save(registro);
-    }
-
-    public List<EmprestimosAtrasadosDTO> EmprestimosAtrasados() {
-        try {
-            return emprestimoRepository.findAll().stream()
-                    .filter(e -> LocalDate.now().isAfter(e.getRetirada().plusMonths(1)))
-                    .filter(e -> !e.isDevolvido())
-                    .map(e -> new EmprestimosAtrasadosDTO(
-                            e.getId(),
-                            e.getCelular(),
-                            e.getNome(),
-                            e.getLivro(),
-                            e.getAutor()
-                    ))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new DataNotFoundException("NÃO EXISTEM EMPRESTIMOS ATRASADOS!");
-        }
     }
 
     public String CorrigirNomes(String nome) {

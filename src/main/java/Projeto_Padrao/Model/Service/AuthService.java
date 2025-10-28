@@ -17,8 +17,7 @@ public class AuthService {
     public Adm Login(String email, String password) {
         Adm adm = admRepository.findByEmail(email);
 
-//        if (adm == null || !passwordEncoder.matches(password, adm.getSenha())) {
-        if (adm == null || password != adm.getSenha()) {
+        if (adm == null || !passwordEncoder.matches(password, adm.getSenha())) {
 //            throw new InvalidCredentialsException("Email ou senha incorretos");
         }
 

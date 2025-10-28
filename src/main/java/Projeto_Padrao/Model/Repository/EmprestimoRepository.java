@@ -9,5 +9,7 @@ import java.util.List;
 
 public interface EmprestimoRepository extends JpaRepository<Emprestimo, Long> {
 
-    List<Emprestimo> findAllByCelular(String celular);
+    List<Emprestimo> findAllByCelularAndDevolvidoIsFalse(String celular);
+
+    Emprestimo findByLivroContainingIgnoreCaseAndDevolvidoIsTrue(String livro);
 }

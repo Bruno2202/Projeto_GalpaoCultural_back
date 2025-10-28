@@ -12,7 +12,6 @@ import com.google.genai.Client;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service("emprestimoServicePrincipal")
 public class EmprestimoService {
@@ -24,18 +23,27 @@ public class EmprestimoService {
     }
 
     public List<VisualizarEmpDTO> ListaDeEmprestimos(String celular) {
-        List<Emprestimo> lista = emprestimoRepository.findAllByCelular(celular);
+        List<Emprestimo> lista = emprestimoRepository.findAllByCelularAndDevolvidoIsFalse(celular);
         if (lista.isEmpty()) {
             throw new DataNotFoundException("CELULAR NÃO ENCONTRADO!");
         }
-        return lista.stream().filter(e -> !e.isDevolvido()).map(e -> new VisualizarEmpDTO(e.getId(), e.getNome(), e.getLivro(), e.getAutor())).toList();
+        return lista.stream().map(e -> new VisualizarEmpDTO(e.getId(), e.getNome(), e.getLivro(), e.getAutor())).toList();
     }
 
     public void AdicionarEmprestimo(EmprestimoDTO emprestimoNovo) {
         try {
             Emprestimo emprestimoRevisado = new Emprestimo(emprestimoNovo);
+
+            ///FAZER BUSCA SE O NOME DO LIVRO JÁ NÃO ESTÁ NO BANCO PARA NÃO UTILIZAR A IA
+            Emprestimo buscarNome = emprestimoRepository.findByLivroContainingIgnoreCaseAndDevolvidoIsTrue(emprestimoNovo.livro());
+
+            if(buscarNome == null) {
             emprestimoRevisado.setLivro(CorrigirNomes(emprestimoNovo.livro()));
             emprestimoRevisado.setAutor(CorrigirNomes(emprestimoNovo.autor()));
+            }else{
+                emprestimoRevisado.setLivro(buscarNome.getLivro());
+                emprestimoRevisado.setAutor(buscarNome.getAutor());
+            }
 
             emprestimoRepository.save(emprestimoRevisado);
         } catch (Exception e) {
@@ -51,7 +59,7 @@ public class EmprestimoService {
     }
 
     public String CorrigirNomes(String nome) {
-        Client client = Client.builder().apiKey("AIzaSyDv6IvXb0Ku5bV0BO8GHm9J0ceE6zA1wHU").build();
+        Client client = Client.builder().apiKey("AIzaSyBrgt3QkxzO6lNm8xSx6ipFYyNRinRsYBk").build();
 
         String prompt = """
                 Você é uma inteligência artificial especializada em literatura.
@@ -82,4 +90,5 @@ public class EmprestimoService {
 
         return response.text().trim();
     }
+
 }

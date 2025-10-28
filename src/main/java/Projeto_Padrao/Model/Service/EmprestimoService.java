@@ -6,6 +6,7 @@ import Projeto_Padrao.Model.Dto.VisualizarEmpDTO;
 import Projeto_Padrao.Model.Entidade.Emprestimo;
 import Projeto_Padrao.Model.Exception.DataNotFoundException;
 import Projeto_Padrao.Model.Repository.EmprestimoRepository;
+import org.springframework.beans.factory.annotation.Value;
 import com.google.genai.types.GenerateContentResponse;
 import org.springframework.stereotype.Service;
 import com.google.genai.Client;
@@ -16,6 +17,9 @@ import java.util.stream.Collectors;
 
 @Service("emprestimoServicePrincipal")
 public class EmprestimoService {
+
+    @Value("${API_KEY_GEMINI_HOMG}")
+    private String apiKey;
 
     final private EmprestimoRepository emprestimoRepository;
 
@@ -51,7 +55,7 @@ public class EmprestimoService {
     }
 
     public String CorrigirNomes(String nome) {
-        Client client = Client.builder().apiKey("AIzaSyDv6IvXb0Ku5bV0BO8GHm9J0ceE6zA1wHU").build();
+        Client client = Client.builder().apiKey(apiKey).build();
 
         String prompt = """
                 Você é uma inteligência artificial especializada em literatura.

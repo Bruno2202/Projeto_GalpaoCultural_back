@@ -27,7 +27,7 @@ public class SecurityConfiguration {
             "/adm/criar" //url que usaremos para criar um usuário
     };
 
-    // Endpoint de teste e que prescisa de Token para acessar
+    // URL de teste para ver se o Token ta funcionando
     public static final String [] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED = {
             "/adm/test"
     };

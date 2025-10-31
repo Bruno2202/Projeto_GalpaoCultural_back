@@ -45,6 +45,7 @@ public class AdmController {
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
+    ///ENDPOINT DE TESTE DE TOKEN
     @GetMapping("/test")
     public ResponseEntity<String> getAuthenticationTest() {
         return new ResponseEntity<>("Autenticado com sucesso", HttpStatus.OK);

@@ -20,8 +20,10 @@ public class EmprestimoController {
     }
 
     @GetMapping(path = "/devolver")
-    public ResponseEntity<List<VisualizarEmpDTO>> ListaDeEmprestimo(@RequestParam String celular) {
-        return ResponseEntity.status(HttpStatus.OK).body(emprestimoService.ListaDeEmprestimos(celular));
+    public ResponseEntity<?> ListaDeEmprestimo(@RequestParam String celular) {
+        System.out.println("Celular recebido: " + celular);
+        List<VisualizarEmpDTO> lista = emprestimoService.ListaDeEmprestimos(celular);
+        return ResponseEntity.ok(lista);
     }
 
     @PostMapping(path = "/registrar")

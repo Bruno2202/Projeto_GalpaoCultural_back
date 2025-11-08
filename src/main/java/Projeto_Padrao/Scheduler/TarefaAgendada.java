@@ -1,5 +1,6 @@
 package Projeto_Padrao.Scheduler;
-import com.google.api.client.util.Value;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;

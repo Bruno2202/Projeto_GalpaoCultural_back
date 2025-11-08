@@ -5,6 +5,8 @@ import Projeto_Padrao.Model.Dto.Autenticacao.CreateUserDto;
 import Projeto_Padrao.Model.Dto.Autenticacao.LoginUserDto;
 import Projeto_Padrao.Model.Dto.Autenticacao.RecoveryJwtTokenDto;
 import Projeto_Padrao.Model.Entidade.Administrador;
+import Projeto_Padrao.Model.Exception.DataNotFoundException;
+import Projeto_Padrao.Model.Exception.Handle.GlobalExceptionHandler;
 import Projeto_Padrao.Model.Repository.AdmRepository;
 import Projeto_Padrao.Model.Repository.EmprestimoRepository;
 import Projeto_Padrao.Model.Security.Config.SecurityConfiguration;
@@ -53,6 +55,11 @@ public class AuthService {
 
     ///Método responsável por criar um usuário
     public void criarUsuario(CreateUserDto createUserDto) {
+
+        Administrador adm = admRepository.findByEmail(createUserDto.email());
+        if (adm != null) {
+            throw new DataNotFoundException("EMAIL INVÁLIDO!");
+        }
 
         // Cria um novo usuário com os dados fornecidos
         Administrador novoADM = Administrador.builder()

@@ -27,7 +27,8 @@ public class SecurityConfiguration {
             "/auth/criar", //url que usaremos para criar um usuário
             "/emprestimo/devolver",
             "/emprestimo/registrar",
-            "/emprestimo/devolucao"
+            "/emprestimo/devolucao",
+            "/health"
     };
 
     // URL de teste para ver se o Token ta funcionando

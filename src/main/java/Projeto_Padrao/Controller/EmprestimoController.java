@@ -19,11 +19,10 @@ public class EmprestimoController {
         this.emprestimoService = emprestimoService;
     }
 
-    @GetMapping(path = "/devolver")
-    public ResponseEntity<?> ListaDeEmprestimo(@RequestParam String celular) {
-        System.out.println("Celular recebido: " + celular);
-        List<VisualizarEmpDTO> lista = emprestimoService.ListaDeEmprestimos(celular);
-        return ResponseEntity.ok(lista);
+    @GetMapping(path = "/verEmprestimos")
+    public List<VisualizarEmpDTO> VerEmprestimos(@RequestParam String celular){
+        List<VisualizarEmpDTO> listaDeEmprestimo = emprestimoService.VerEmprestimos(celular);
+        return listaDeEmprestimo;
     }
 
     @PostMapping(path = "/registrar")

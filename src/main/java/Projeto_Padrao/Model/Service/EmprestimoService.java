@@ -22,12 +22,16 @@ public class EmprestimoService {
         this.emprestimoRepository = emprestimoRepository;
     }
 
-    public List<VisualizarEmpDTO> ListaDeEmprestimos(String celular) {
-        List<Emprestimo> lista = emprestimoRepository.findAllByCelularAndDevolvidoIsFalse(celular);
-        if (lista.isEmpty()) {
-            throw new DataNotFoundException("CELULAR NÃO ENCONTRADO!");
-        }
-        return lista.stream().map(e -> new VisualizarEmpDTO(e.getId(), e.getNome(), e.getLivro(), e.getAutor())).toList();
+    ///Listar todos os emprestimo pelo telefone
+    public List<VisualizarEmpDTO> VerEmprestimos(String celular){
+        List<Emprestimo> listaDeLivro = emprestimoRepository.findAllByCelularAndDevolvidoIsFalse(celular);
+        return listaDeLivro.stream()
+                .map(e -> new VisualizarEmpDTO(
+                        e.getId(),
+                        e.getNome(),
+                        e.getLivro(),
+                        e.getAutor()
+                )).toList();
     }
 
     public void AdicionarEmprestimo(EmprestimoDTO emprestimoNovo) {

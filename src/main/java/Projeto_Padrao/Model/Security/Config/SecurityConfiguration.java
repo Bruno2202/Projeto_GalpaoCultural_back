@@ -26,7 +26,7 @@ public class SecurityConfiguration {
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
             "/auth/login",
             "/auth/criar",
-            "/emprestimos/devolver",
+            "/emprestimos/verEmprestimos",
             "/emprestimos/registrar",
             "/emprestimos/devolucao",
             "/health"
